@@ -119,6 +119,19 @@ public class DateUtilTest {
 		date.increment();
 		Assert.assertEquals(3, date.getDay());
 	}
+	
+	@Test
+	public void testJune30IncrementToJuly1() {
+	    DateUtil date = new DateUtil(30, 6, 2024);
+	    System.out.println("testJune30Increment > " + date);
+	    
+	    date.increment();
+	    
+	    System.out.println(date);
+	    
+	    Assert.assertEquals(1, date.getDay());
+	    Assert.assertEquals(7, date.getMonth());
+	}
 
 	
 	@Test
