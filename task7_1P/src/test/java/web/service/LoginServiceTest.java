@@ -45,8 +45,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("ahsan");
         driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
-        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy for 2000-01-01
-
+        driver.findElement(By.id("dob")).sendKeys("01012000"); 
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
 
@@ -63,8 +62,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("ahsan");
         driver.findElement(By.id("passwd")).sendKeys("wrong");
-        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
-
+        driver.findElement(By.id("dob")).sendKeys("01012000");
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
 
@@ -73,10 +71,6 @@ public class LoginServiceTest {
         Assert.assertEquals("fail", title);
         driver.close();
     }
-
-    // -----------------------------------------------------------------------
-    // FT-03: Wrong dob → fail
-    // -----------------------------------------------------------------------
     @Test
     public void testLoginFailWrongDob() {
         WebDriver driver = getDriver();
@@ -85,8 +79,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("ahsan");
         driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
-        driver.findElement(By.id("dob")).sendKeys("01011999");  // mmddyyyy for 1999-01-01
-
+        driver.findElement(By.id("dob")).sendKeys("01011999");
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
 
@@ -96,16 +89,12 @@ public class LoginServiceTest {
         driver.close();
     }
 
-    // -----------------------------------------------------------------------
-    // FT-04: Empty fields → fail
-    // -----------------------------------------------------------------------
     @Test
     public void testLoginFailEmptyFields() {
         WebDriver driver = getDriver();
         driver.navigate().to(getLoginPagePath());
         sleep(2);
 
-        // Submit without filling any fields
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
 
@@ -115,9 +104,6 @@ public class LoginServiceTest {
         driver.close();
     }
 
-    // -----------------------------------------------------------------------
-    // FT-05: Wrong username → fail
-    // -----------------------------------------------------------------------
     @Test
     public void testLoginFailWrongUsername() {
         WebDriver driver = getDriver();
@@ -126,7 +112,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("wrong_user");
         driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
-        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
+        driver.findElement(By.id("dob")).sendKeys("01012000");
 
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
@@ -136,10 +122,7 @@ public class LoginServiceTest {
         Assert.assertEquals("fail", title);
         driver.close();
     }
-
-    // -----------------------------------------------------------------------
-    // FT-06: All three fields wrong → fail
-    // -----------------------------------------------------------------------
+    
     @Test
     public void testLoginFailAllWrong() {
         WebDriver driver = getDriver();
@@ -148,7 +131,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("bad_user");
         driver.findElement(By.id("passwd")).sendKeys("bad_pass");
-        driver.findElement(By.id("dob")).sendKeys("12311990");  // mmddyyyy for 1990-12-31
+        driver.findElement(By.id("dob")).sendKeys("12311990"); 
 
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
@@ -158,10 +141,7 @@ public class LoginServiceTest {
         Assert.assertEquals("fail", title);
         driver.close();
     }
-
-    // -----------------------------------------------------------------------
-    // FT-07: Correct username & password, wrong dob → fail
-    // -----------------------------------------------------------------------
+    
     @Test
     public void testLoginFailCorrectCredentialsWrongDob() {
         WebDriver driver = getDriver();
@@ -170,7 +150,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("ahsan");
         driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
-        driver.findElement(By.id("dob")).sendKeys("06152001");  // mmddyyyy for 2001-06-15
+        driver.findElement(By.id("dob")).sendKeys("06152001");
 
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
@@ -180,10 +160,7 @@ public class LoginServiceTest {
         Assert.assertEquals("fail", title);
         driver.close();
     }
-
-    // -----------------------------------------------------------------------
-    // FT-08: Uppercase username → fail (case-sensitivity check)
-    // -----------------------------------------------------------------------
+    
     @Test
     public void testLoginFailUppercaseUsername() {
         WebDriver driver = getDriver();
@@ -192,7 +169,7 @@ public class LoginServiceTest {
 
         driver.findElement(By.id("username")).sendKeys("AHSAN");
         driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
-        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
+        driver.findElement(By.id("dob")).sendKeys("01012000");
 
         driver.findElement(By.cssSelector("[type=submit]")).submit();
         sleep(2);
