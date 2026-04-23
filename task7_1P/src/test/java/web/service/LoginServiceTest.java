@@ -1,72 +1,3 @@
-//package web.service;
-//
-//import org.junit.Assert;
-//import org.junit.Test;
-//import org.openqa.selenium.By;
-//import org.openqa.selenium.WebDriver;
-//import org.openqa.selenium.WebElement;
-//import org.openqa.selenium.chrome.ChromeDriver;
-//
-//
-//public class LoginServiceTest {
-//	
-//	private void sleep(long sec) {
-//		try {
-//			Thread.sleep(sec*1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	@Test
-//	public void testLoginSuccess() {
-//		System.setProperty(
-//				"webdriver.chrome.driver", 
-//				"/home/mahabib/java_lib/chromedriver-linux64/chromedriver");
-//		
-//		WebDriver driver = new ChromeDriver();		
-//		System.out.println("Driver info: " + driver);
-//		
-//		// Full path where login.html is located.
-//		// You can click on html file and copy the path shown in your browser.
-//		//
-//		driver.navigate().to(
-//				"file:///home/mahabib/Documents/deakin_local/teaching/2024/sit707/jetty/pages/login.html");
-//		sleep(5);
-//		
-//		// Find username element
-//		//
-//		WebElement ele = driver.findElement(By.id("username"));
-//		ele.clear();
-//		ele.sendKeys("ahsan");
-//		
-//		// Find password element
-//		//
-//		ele = driver.findElement(By.id("passwd"));
-//		ele.clear();
-//		ele.sendKeys("ahsan_pass");
-//		
-//		// Find Submit button, and click on button.
-//		//
-//		ele = driver.findElement(By.cssSelector("[type=submit]"));
-//		ele.submit();
-//		
-//		sleep(5);
-//		
-//		/*
-//		 * On successful login, the title of page changes to 'success',
-//		 * otherwise, 'fail'.
-//		 */
-//		String title = driver.getTitle();
-//		System.out.println("Title: " + title);
-//		
-//		Assert.assertEquals(title, "success");
-//		
-//		driver.close();
-//	}
-//}
-
 package web.service;
 
 import org.junit.Assert;
@@ -80,11 +11,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public class LoginServiceTest {
 
     private static final String CHROME_DRIVER_PATH =
-            "/usr/local/bin/chromedriver";
+            "/Users/aakashraj/Downloads/chromedriver-mac-arm64/chromedriver";
 
     private static final String LOGIN_HTML_PATH =
-            "file:///Users/YOUR_MAC_USERNAME/Documents/sit707/jetty/pages/login.html"; 
-    
+            "file:///Users/aakashraj/Downloads/7.1P-resources/pages/login.html";
+
     private void sleep(long sec) {
         try {
             Thread.sleep(sec * 1000);
@@ -93,110 +24,182 @@ public class LoginServiceTest {
         }
     }
 
-    private String performLogin(String username, String password, String dob) {
+    private WebDriver getDriver() {
         System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
-
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--remote-allow-origins=*");
-
-        WebDriver driver = new ChromeDriver(options);
-        String title;
-        try {
-            driver.navigate().to(LOGIN_HTML_PATH);
-            sleep(3);
-
-            // Fill username
-            WebElement ele = driver.findElement(By.id("username"));
-            ele.clear();
-            ele.sendKeys(username);
-
-            // Fill password
-            ele = driver.findElement(By.id("passwd"));
-            ele.clear();
-            ele.sendKeys(password);
-
-            // Fill dob  (HTML date input expects yyyy-mm-dd)
-            ele = driver.findElement(By.id("dob"));
-            ele.clear();
-            ele.sendKeys(dob);
-
-            // Submit the form
-            ele = driver.findElement(By.cssSelector("[type=submit]"));
-            ele.submit();
-            sleep(5);
-
-            title = driver.getTitle();
-            System.out.println("[" + Thread.currentThread().getStackTrace()[2].getMethodName()
-                    + "] Page title: " + title);
-        } finally {
-            driver.close();
-        }
-        return title;
+        return new ChromeDriver(options);
     }
 
-    // FT-01 : All valid credentials → success
-    @Test
-    public void testFT01_ValidCredentials_Success() {
-        String title = performLogin("ahsan", "ahsan_pass", "2001-01-01");
-        Assert.assertEquals("FT-01: All valid credentials should return 'success'",
-                "success", title);
+    private String getLoginPagePath() {
+        return LOGIN_HTML_PATH;
     }
 
-    // FT-02 : Wrong username → fail
     @Test
-    public void testFT02_WrongUsername_Fail() {
-        String title = performLogin("wrong_user", "ahsan_pass", "2001-01-01");
-        Assert.assertEquals("FT-02: Wrong username should return 'fail'",
-                "fail", title);
+    public void testLoginSuccess() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("ahsan");
+        driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
+        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy for 2000-01-01
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-01 Title: " + title);
+        Assert.assertEquals("success", title);
+        driver.close();
     }
 
-    // FT-03 : Wrong password → fail
-    @Test
-    public void testFT03_WrongPassword_Fail() {
-        String title = performLogin("ahsan", "wrong_pass", "2001-01-01");
-        Assert.assertEquals("FT-03: Wrong password should return 'fail'",
-                "fail", title);
+    public void testLoginFailWrongPassword() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("ahsan");
+        driver.findElement(By.id("passwd")).sendKeys("wrong");
+        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-02 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 
-    // FT-04 : Wrong dob → fail
+    // -----------------------------------------------------------------------
+    // FT-03: Wrong dob → fail
+    // -----------------------------------------------------------------------
     @Test
-    public void testFT04_WrongDob_Fail() {
-        String title = performLogin("ahsan", "ahsan_pass", "1990-05-15");
-        Assert.assertEquals("FT-04: Wrong DoB should return 'fail'",
-                "fail", title);
+    public void testLoginFailWrongDob() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("ahsan");
+        driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
+        driver.findElement(By.id("dob")).sendKeys("01011999");  // mmddyyyy for 1999-01-01
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-03 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 
-    // FT-05 : All three fields wrong → fail
+    // -----------------------------------------------------------------------
+    // FT-04: Empty fields → fail
+    // -----------------------------------------------------------------------
     @Test
-    public void testFT05_AllFieldsWrong_Fail() {
-        String title = performLogin("bad_user", "bad_pass", "1999-12-31");
-        Assert.assertEquals("FT-05: All wrong credentials should return 'fail'",
-                "fail", title);
+    public void testLoginFailEmptyFields() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        // Submit without filling any fields
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-04 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 
-    // FT-06 : All fields empty → fail
+    // -----------------------------------------------------------------------
+    // FT-05: Wrong username → fail
+    // -----------------------------------------------------------------------
     @Test
-    public void testFT06_EmptyFields_Fail() {
-        String title = performLogin("", "", "");
-        Assert.assertEquals("FT-06: Empty fields should return 'fail'",
-                "fail", title);
+    public void testLoginFailWrongUsername() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("wrong_user");
+        driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
+        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-05 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 
-    // FT-07 : Correct username & password, wrong dob → fail
+    // -----------------------------------------------------------------------
+    // FT-06: All three fields wrong → fail
+    // -----------------------------------------------------------------------
     @Test
-    public void testFT07_CorrectUsernamePassword_WrongDob_Fail() {
-        String title = performLogin("ahsan", "ahsan_pass", "2000-06-15");
-        Assert.assertEquals("FT-07: Correct username/password with wrong DoB should return 'fail'",
-                "fail", title);
+    public void testLoginFailAllWrong() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("bad_user");
+        driver.findElement(By.id("passwd")).sendKeys("bad_pass");
+        driver.findElement(By.id("dob")).sendKeys("12311990");  // mmddyyyy for 1990-12-31
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-06 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 
-    // FT-08 : Username with wrong case → fail  (case-sensitivity check)
+    // -----------------------------------------------------------------------
+    // FT-07: Correct username & password, wrong dob → fail
+    // -----------------------------------------------------------------------
     @Test
-    public void testFT08_UppercaseUsername_Fail() {
-        String title = performLogin("AHSAN", "ahsan_pass", "2001-01-01");
-        Assert.assertEquals("FT-08: Uppercase username should return 'fail' (case-sensitive)",
-                "fail", title);
+    public void testLoginFailCorrectCredentialsWrongDob() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("ahsan");
+        driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
+        driver.findElement(By.id("dob")).sendKeys("06152001");  // mmddyyyy for 2001-06-15
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-07 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
+    }
+
+    // -----------------------------------------------------------------------
+    // FT-08: Uppercase username → fail (case-sensitivity check)
+    // -----------------------------------------------------------------------
+    @Test
+    public void testLoginFailUppercaseUsername() {
+        WebDriver driver = getDriver();
+        driver.navigate().to(getLoginPagePath());
+        sleep(2);
+
+        driver.findElement(By.id("username")).sendKeys("AHSAN");
+        driver.findElement(By.id("passwd")).sendKeys("ahsan_pass");
+        driver.findElement(By.id("dob")).sendKeys("01012000");  // mmddyyyy
+
+        driver.findElement(By.cssSelector("[type=submit]")).submit();
+        sleep(2);
+
+        String title = driver.getTitle();
+        System.out.println("FT-08 Title: " + title);
+        Assert.assertEquals("fail", title);
+        driver.close();
     }
 }
